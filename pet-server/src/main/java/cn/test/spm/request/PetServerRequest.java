@@ -1,26 +1,51 @@
 package cn.test.spm.request;
 
-import cn.test.spm.command.PetBaseCommand;
-import cn.test.spm.enums.CommandEnum;
+import cn.test.spm.enums.PetRequestMethodEnum;
 
 import java.net.Socket;
 
 /**
- * 用来封装 客户端请求
+ * 将客户端数据包装成一个Request对象
  *
  * @author 郭豪豪
  * @date 2020-02-13
  **/
 public class PetServerRequest {
 
-    public PetServerRequest(Socket socket,String data){
-        this.socket = socket;
-        this.params = data;
-    }
+    private String param;
+
+    private PetRequestMethodEnum requestMethod;
 
     private Socket socket;
 
-    private String params;
+    private String socketId;
+
+    public PetServerRequest(String data, Socket socket){
+        String[] commandLine = data.split(":");
+        PetRequestMethodEnum commandEnum =
+                PetRequestMethodEnum.findByCode(commandLine[0].toUpperCase());
+        String commandData = commandLine.length > 1 ? commandLine[1] : null;
+        this.param = commandData;
+        this.socket = socket;
+        this.requestMethod = commandEnum;
+        this.socketId = socket.getInetAddress()+":"+socket.getPort();
+    }
+
+    public String getParam() {
+        return param;
+    }
+
+    public void setParam(String param) {
+        this.param = param;
+    }
+
+    public PetRequestMethodEnum getRequestMethod() {
+        return requestMethod;
+    }
+
+    public void setRequestMethod(PetRequestMethodEnum requestMethod) {
+        this.requestMethod = requestMethod;
+    }
 
     public Socket getSocket() {
         return socket;
@@ -30,11 +55,20 @@ public class PetServerRequest {
         this.socket = socket;
     }
 
-    /**
-     * 此方法会根据
-     * @return
-     */
-    public PetBaseCommand buildCommand(){
-        return null;
+    public String getSocketId() {
+        return socketId;
     }
-}
+
+    public void setSocketId(String socketId) {
+        this.socketId = socketId;
+    }
+
+
+    @Override
+    public String toString(){
+        return "PetServerRequest[param=" + this.param +
+                ",socketId=" + this.socketId +
+                ",requestMethod=" + this.requestMethod == null ? "NONE" : this.requestMethod.getCode() + "]";
+    }
+
+  }
