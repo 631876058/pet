@@ -27,6 +27,7 @@ public class PetClient {
     public synchronized void startClient() throws IOException {
         socket = new Socket();
         socket.connect(new InetSocketAddress("127.0.0.1", 6666));
+        socket.setTcpNoDelay(true);
         OutputStream outputStream = socket.getOutputStream();
         printWriter = new PrintWriter(outputStream);
 

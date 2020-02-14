@@ -1,6 +1,7 @@
 package cn.test.spm.db;
 
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,6 +17,6 @@ public class PetDataBase {
     /**
      * 用于存储宠物数据，注意多线程下的并发问题
      */
-    public static final Map<String, AtomicInteger> petData = new ConcurrentHashMap<>(16);
+    public static final Map<String, Integer> petData = new HashMap<>(16);
 
 }

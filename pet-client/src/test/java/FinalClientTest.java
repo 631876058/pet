@@ -17,14 +17,18 @@ public class FinalClientTest {
     /**
      * 客户端数
      */
-    public static Integer CLIENT = 500;
+    public static Integer CLIENT = 1000;
 
     /**
      * 单客户端请求数量
      */
     public static Integer PRE_CLIENT_REQUEST_NUM = 10;
 
+    /**
+     * 停顿间隔
+     */
     public static Integer CLIENT_CONNECT_INTERVAL = 20;
+
     /**
      * 每一个工人完成工作之后就会countDown一下
      */
@@ -37,8 +41,8 @@ public class FinalClientTest {
      * @throws IOException
      */
     public static void main(String[] args ) throws InterruptedException, IOException {
-//        finalTestGET();
-        finalTestLIST();
+        finalTestGET();
+//        finalTestLIST();
     }
 
     public static void finalTestGET() throws InterruptedException {

@@ -51,7 +51,7 @@ public class ListPetServerAction extends AbstractPetServerAction {
         return sb.toString();
     }
 
-    public List<DataItem> copy(Map<String, AtomicInteger> preData) {
+    public List<DataItem> copy(Map<String, Integer> preData) {
         List<DataItem> dataItemList = new ArrayList<>();
         preData.forEach((k, v) -> {
             DataItem dataItem = new DataItem(k, v.intValue());
