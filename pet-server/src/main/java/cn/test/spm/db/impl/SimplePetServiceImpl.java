@@ -1,38 +1,46 @@
-package cn.test.spm.factory.action;
+package cn.test.spm.db.impl;
 
-import cn.test.spm.db.PetDataBase;
+import cn.test.spm.db.PetService;
 
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 宠物列表处理器
+ * 简单的基于内存的宠物业务实现
  *
  * @author 郭豪豪
- * @date 2020-02-13
+ * @date 2020-02-15
  **/
-public class ListPetServerAction extends AbstractPetServerAction {
+public class SimplePetServiceImpl implements PetService {
+    /**
+     * 用于存储宠物数据，注意多线程下的并发问题
+     */
+    public static final Map<String, AtomicInteger> petData = new ConcurrentHashMap<>();
 
-    public ListPetServerAction(String socketId, Socket socket, String data) {
-        super(socketId, socket, data);
+    @Override
+    public String getPet(String pet) {
+        //用double check 来实现一下
+        AtomicInteger adder = petData.get(pet);
+
+        if (adder == null) {
+            synchronized (petData) {
+                adder = petData.get(pet);
+                if (adder == null) {
+                    adder = new AtomicInteger(0);
+                    petData.put(pet, adder);
+                }
+            }
+        }
+        adder.incrementAndGet();
+        return "OK";
     }
 
     @Override
-    protected void action(Socket socket, String data) {
-        String sort = sort();
-        sendMsg2Client(sort+"OK");
-    }
-
-    /**
-     * 需要将此时的数据保存一份快照
-     *
-     * @return
-     */
-    public String sort() {
-        List<DataItem> dataBak = copy(PetDataBase.petData);
+    public String getRankList() {
+        List<DataItem> dataBak = copy(petData);
         StringBuffer sb = new StringBuffer();
 
         //简单实现选择排序吧
@@ -51,7 +59,8 @@ public class ListPetServerAction extends AbstractPetServerAction {
         return sb.toString();
     }
 
-    public List<DataItem> copy(Map<String, Integer> preData) {
+
+    public List<DataItem> copy(Map<String, AtomicInteger> preData) {
         List<DataItem> dataItemList = new ArrayList<>();
         preData.forEach((k, v) -> {
             DataItem dataItem = new DataItem(k, v.intValue());
@@ -91,6 +100,4 @@ public class ListPetServerAction extends AbstractPetServerAction {
             return key + ":" + num + "\n";
         }
     }
-
-
 }

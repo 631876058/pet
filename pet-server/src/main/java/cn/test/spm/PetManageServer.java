@@ -12,8 +12,6 @@ import java.net.Socket;
  **/
 public class PetManageServer {
 
-    private static volatile boolean shutdown = false;
-
     public static void main(String[] args) throws IOException {
         startServer(6666);
     }
@@ -22,18 +20,18 @@ public class PetManageServer {
         ServerSocket serverSocket = new ServerSocket(6666);
 
         //接受客户端请求
-        while(!shutdown){
-            try {
+        try {
+            while (true) {
                 System.out.println("PetServer wait for client connect...");
                 Socket client = serverSocket.accept();
                 System.out.println("PetServer accept a client connect [" + client.getInetAddress() + ":" + client.getPort() + "]");
-                //将这个client交给ClientSocketManager管理
+                //将这个client交给ClientSocketManager控制
                 ClientSocketManager.addClient(client);
-            }catch(Exception ex){
-                ex.printStackTrace();
             }
-        }
 
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
 

@@ -1,16 +1,10 @@
 package cn.test.spm;
 
-import cn.test.spm.executors.PetBizExecutor;
-import cn.test.spm.request.PetServerRequest;
+import cn.test.spm.db.PetService;
+import cn.test.spm.db.impl.SimplePetServiceImpl;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Socket;
-import java.nio.channels.SocketChannel;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -21,21 +15,22 @@ import java.util.concurrent.atomic.AtomicInteger;
  **/
 public class ClientSocketManager {
 
-    private static volatile boolean shutdown = false;
-
-    private static final CopyOnWriteArrayList<Socket> clientList = new CopyOnWriteArrayList<>();
-
-    private static final Map<SocketChannel, StringBuffer> socketRemainingBuffer = new HashMap<>();
-
+    /**
+     * 记录连接数
+     */
     private static final AtomicInteger CONNECT_NUM = new AtomicInteger();
 
+    /**
+     * 记录请求次数
+     */
     private static final AtomicInteger REQUEST_NUM = new AtomicInteger();
+
+    private static PetService petService = new SimplePetServiceImpl();
 
 
     public static void addClient(Socket client) {
-        clientList.add(client);
         CONNECT_NUM.incrementAndGet();
-        //方式1：最简单办法一个Client Socket，一个线程。但是这样可能导致线程太多了
+        //方式1：最简单办法一个Client Socket，一个线程。缺点就是这样开线程太多了
         new Thread(() -> {
             try {
                 InputStream inputStream = client.getInputStream();
@@ -43,20 +38,29 @@ public class ClientSocketManager {
                 String data = null;
                 while ((data = br.readLine()) != null) {
                     System.out.println("Client [" + client.getInetAddress() + ":" + client.getPort() + "] data [ " + data + " ] receive finished");
-                    PetServerRequest request =
-                            new PetServerRequest(data, client);
                     REQUEST_NUM.incrementAndGet();
-                    PetBizExecutor.execute(request);
+
+                    //业务处理
+                    String result = null;
+                    if (data.indexOf("GET") >= 0) {
+                        String[] param = data.split(":");
+                        result = petService.getPet(param[1]);
+                    }
+                    if (data.indexOf("LIST") >= 0) {
+                        result = petService.getRankList();
+                    }
+                    //向客户端返回结果
+                    OutputStream outputStream = client.getOutputStream();
+                    PrintWriter pw = new PrintWriter(outputStream);
+                    pw.println(result);
+                    pw.flush();
                 }
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
 
         }, "clientT:" + client.getInetAddress() + ":" + client.getPort()).start();
-    }
-
-    public static void shutdown() {
-        shutdown = true;
     }
 
 

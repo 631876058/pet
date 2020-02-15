@@ -35,26 +35,10 @@ public class PetClient {
             try {
                 InputStream inputStream = socket.getInputStream();
                 InputStreamReader reader = new InputStreamReader(inputStream);
-                //在2048个字符内，必须出现OK，否则就出事故了
-                char[] buff = new char[2048];
-                int size = 0;
-                StringBuffer sb = new StringBuffer();
-                //这里简单用OK拆个包吧
-                while(!shutdown) {
-                    while ((size = reader.read(buff)) > 0) {
-                        for (int i = 0; i < size; i++) {
-                            //出现OK字样后，将sb里面整体拿出，作为一个业务数据，并创建新的sb来接受另外的数据
-                            if (buff[i] == 'O' && buff[i + 1] == 'K') {
-                                sb.append("OK");
-                                String data = sb.toString();
-                                System.out.println(data);
-                                sb = new StringBuffer();
-                            }
-                            sb.append(buff[i]);
-                        }
-                        //处理完buff之后，重新创建一个buff
-                        buff = new char[2048];
-                    }
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                String data = null;
+                while ((data = bufferedReader.readLine()) != null){
+                    System.out.println(data);
                 }
                 socket.close();
             } catch (Exception ex) {
