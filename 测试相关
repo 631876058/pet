@@ -1,42 +1,27 @@
 测试流程：
 1.启动pet-server模块的 PetManagerServer 服务
-2.pet-client模块的 FinalClientTest 测试类。
-重点设置三个参数
+2.启动pet-client模块的 FinalClientTest 测试类。
+其中重点设置个参数
 CLIENT：模拟客户端数
 PRE_CLIENT_REQUEST_NUM：每个客户端发送请求数量
-CLIENT_CONNECT_INTERVAL：相邻客户端连接时间间隔
-3.运行main函数，注意两个方法，先运行GET对数据进行增加，GET运行完毕后，运行LIST返回服务器数据结果
 
 
-目前测试后结果：
 单机测试环境：
 MacBook Pro 2018
 2.2 GHz Intel Core i7
 16 GB 2400 MHz DDR4
 
-CLIENT：10
-PRE_CLIENT_REQUEST_NUM：100
-CLIENT_CONNECT_INTERVAL：0
-全部成功
+目前测试后结果：
 
-CLIENT：50
-PRE_CLIENT_REQUEST_NUM：5
-CLIENT_CONNECT_INTERVAL：0
-全部成功
-
-CLIENT：60
-PRE_CLIENT_REQUEST_NUM：10
-CLIENT_CONNECT_INTERVAL：0
-成功 55 失败 5
-
-CLIENT：500
-PRE_CLIENT_REQUEST_NUM：10
-CLIENT_CONNECT_INTERVAL：20
-全部成功
+时间：0215
 
 CLIENT：1000
 PRE_CLIENT_REQUEST_NUM：10
-CLIENT_CONNECT_INTERVAL：20
-全部成功
+处理完毕用时：1128ms 数据正确无误
+
+CLIENT：500
+PRE_CLIENT_REQUEST_NUM：100
+处理完毕用时：1956ms 数据正确无误
+
 
 

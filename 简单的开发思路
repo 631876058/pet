@@ -1,7 +1,7 @@
 PET-SERVER
 1.启动PetManagerServer主线程用来接受连接请求，接受请求后直接交给ClientSocketManager来进行维护。
-2.ClientSocketManager核心有一个线程，轮训维护的Socket列表，发现有数据过来，就进行拆包，封装成Request对象，交给Executors处理。
-3.Exectors会根据Request，通过工厂类，创建Action，并将Action交给线程池进行处理
+2.ClientSocketManager 会给每个Client启动一个线程处理
+3.每个线程接收到之后，根据Data调用不同的Service方法
 
 PET-CLIENT
 这个简单实现了，直接写在一个入口类里面。
