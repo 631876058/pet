@@ -1,10 +1,7 @@
-import org.junit.Test;
-
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 最终版测试
@@ -41,8 +38,8 @@ public class FinalClientTest {
      * @throws IOException
      */
     public static void main(String[] args ) throws InterruptedException, IOException {
-        finalTestGET();
-//        finalTestLIST();
+//        finalTestGET();
+        finalTestLIST();
     }
 
     public static void finalTestGET() throws InterruptedException {
@@ -73,7 +70,7 @@ public class FinalClientTest {
 
         //按道理来说这里存储的值是最真实的，每一次发送前都会累加这里的值。
         //最后在发送一个LIST指令来进行对比
-        public static volatile ConcurrentHashMap<String, AtomicInteger> actualNum = new ConcurrentHashMap<>();
+
 
         @Override
         public void run() {
@@ -93,19 +90,18 @@ public class FinalClientTest {
             countDownLatch.countDown();
         }
 
+        public static volatile ConcurrentHashMap<String, Integer> actualNum = new ConcurrentHashMap<>();
+
         public static void increment(String pet) {
             //ConcurrentHashMap get没有加锁，所以你拿的值并不是最新的
             //如果判断为空就设置进去，会少算。
-            AtomicInteger integer = actualNum.get(pet);
-            if (integer == null) {
-                synchronized (actualNum) {
-                    if(integer == null) {
-                        integer = new AtomicInteger(0);
-                    }
+            synchronized (actualNum){
+                Integer num = actualNum.get(pet);
+                if (num == null) {
+                    num = 0;
                 }
+                actualNum.put(pet,++num);
             }
-            integer.incrementAndGet();
-            actualNum.put(pet,integer);
         }
 
 
